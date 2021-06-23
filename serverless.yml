@@ -53,7 +53,6 @@ package:
 #    variable1: value1
 
 
-
 functions:
 
   poller:
@@ -71,6 +70,36 @@ functions:
         - ./**
       include:
         - functions/urlRedirect/handler.py
+
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+
+    # Create DynamoDB
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sessionTable
+        AttributeDefinitions:
+          - AttributeName: deviceCode
+            AttributeType: S
+        KeySchema:
+          - AttributeName: deviceCode
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    # Create SNS Topic
+    #
+    # FIGURE OUT HOW TO ADD AN EMAIL TO THIS TEMPALTE
+    #
+    TokenAlert:
+        Type: AWS::SNS::Topic
+        Properties:
+        DisplayName: 'Send message when token becomes active'
+        TopicName: TokenAlert
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
