@@ -62,6 +62,7 @@ functions:
         - ./**
       include:
         - functions/poller/handler.py
+    # ADD CLOUD WATCH EVENT
 
   urlRedirect:
     handler: functions/urlRedirect/handler.main
@@ -70,6 +71,9 @@ functions:
         - ./**
       include:
         - functions/urlRedirect/handler.py
+    events:
+      - http: get redirect
+
 
 
 resources: # CloudFormation template syntax from here on.
