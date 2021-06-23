@@ -64,13 +64,13 @@ functions:
       include:
         - functions/poller/handler.py
 
-  createUrl:
-    handler: functions/createUrl/handler.main
+  urlRedirect:
+    handler: functions/urlRedirect/handler.main
     package:
       exclude:
         - ./**
       include:
-        - functions/createUrl/handler.py
+        - functions/urlRedirect/handler.py
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
