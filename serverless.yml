@@ -35,9 +35,19 @@ provider:
             - "dynamodb:Scan"
           Resource:
             - "*"
-
+custom: 
+  accountId: ${file(./aws.js):getAccountId}
+  region: ${opt:region, self:provider.region}
+  notificationEmail: ${file(./config.js):notificationEmail} 
+  scripts:
+    hooks:
+      'deploy:finalize': 'aws sns subscribe --topic-arn  arn:aws:sns:${self:custom.region}:${self:custom.accountId}:TokenAlert --protocol email --notification-endpoint ${self:custom.notificationEmail} --region ${self:custom.region}'
+                                             
 package:
   individually: true
+
+plugins:
+  - serverless-plugin-scripts
 
 functions:
 
@@ -81,6 +91,10 @@ functions:
 
 resources: # CloudFormation template syntax from here on.
   Resources:
+    TokenAlert:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: TokenAlert
 
     # Create DynamoDB
     usersTable:
@@ -96,16 +110,6 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-
-    # Create SNS Topic
-    #
-    # FIGURE OUT HOW TO ADD AN EMAIL TO THIS TEMPALTE
-    #
-    # TokenAlert:
-    #     Type: AWS::SNS::Topic
-    #     Properties:
-    #     DisplayName: 'Send message when token becomes active'
-    #     TopicName: TokenAlert
 
 
 #    The following are a few example events you can configure
