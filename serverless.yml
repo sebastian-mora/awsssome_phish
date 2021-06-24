@@ -25,33 +25,18 @@ provider:
   runtime: python3.8
   lambdaHashingVersion: 20201221
 
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+          Resource:
+            - "*"
+
 package:
   individually: true
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
 
 functions:
 
@@ -66,13 +51,16 @@ functions:
 
   urlRedirect:
     handler: functions/urlRedirect/handler.main
+    environment:
+      START_URL: "https://ruse.awsapps.com/start"
+      REGION: "us-west-2"
     package:
       exclude:
         - ./**
       include:
         - functions/urlRedirect/handler.py
     events:
-      - http: get redirect
+      - http: get redirect/
 
 
 
@@ -98,11 +86,11 @@ resources: # CloudFormation template syntax from here on.
     #
     # FIGURE OUT HOW TO ADD AN EMAIL TO THIS TEMPALTE
     #
-    TokenAlert:
-        Type: AWS::SNS::Topic
-        Properties:
-        DisplayName: 'Send message when token becomes active'
-        TopicName: TokenAlert
+    # TokenAlert:
+    #     Type: AWS::SNS::Topic
+    #     Properties:
+    #     DisplayName: 'Send message when token becomes active'
+    #     TopicName: TokenAlert
 
 
 #    The following are a few example events you can configure
