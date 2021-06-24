@@ -32,6 +32,7 @@ provider:
           Action:
             - "dynamodb:PutItem"
             - "dynamodb:GetItem"
+            - "dynamodb:Scan"
           Resource:
             - "*"
 
@@ -63,6 +64,18 @@ functions:
         - functions/urlRedirect/handler.py
     events:
       - http: get redirect/
+
+
+
+  getClicks:
+    handler: functions/getClicks/handler.main
+    package:
+      exclude:
+        - ./**
+      include:
+        - functions/getClicks/handler.py
+    events:
+      - http: get getClicks/
 
 
 
