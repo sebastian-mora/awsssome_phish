@@ -24,6 +24,9 @@ provider:
   name: aws
   runtime: python3.8
   lambdaHashingVersion: 20201221
+  apiGateway:
+    apiKeys:
+      - apiKey
 
   iam:
     role:
@@ -38,7 +41,8 @@ provider:
 custom: 
   accountId: ${file(./aws.js):getAccountId}
   region: ${opt:region, self:provider.region}
-  notificationEmail: ${file(./config.js):notificationEmail} 
+  notificationEmail: ${file(./config.js):notificationEmail}
+
   scripts:
     hooks:
       'deploy:finalize': 'aws sns subscribe --topic-arn  arn:aws:sns:${self:custom.region}:${self:custom.accountId}:TokenAlert --protocol email --notification-endpoint ${self:custom.notificationEmail} --region ${self:custom.region}'
@@ -76,6 +80,18 @@ functions:
       - http: get redirect/
 
 
+  getTokens:
+    handler: functions/getTokens/handler.main
+    package:
+      exclude:
+        - ./**
+      include:
+        - functions/getTokens/handler.py
+    events:
+      - http:
+          path: getTokens
+          method: get
+          private: true
 
   getClicks:
     handler: functions/getClicks/handler.main
