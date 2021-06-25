@@ -24,6 +24,9 @@ provider:
   name: aws
   runtime: python3.8
   lambdaHashingVersion: 20201221
+  apiGateway:
+    apiKeys:
+      - apiKey
 
   iam:
     role:
@@ -37,12 +40,9 @@ provider:
             - "*"
 custom: 
   accountId: ${file(./aws.js):getAccountId}
-  region: ${opt:region, self:provider.region}
-  notificationEmail: ${file(./config.js):notificationEmail} 
-  scripts:
-    hooks:
-      'deploy:finalize': 'aws sns subscribe --topic-arn  arn:aws:sns:${self:custom.region}:${self:custom.accountId}:TokenAlert --protocol email --notification-endpoint ${self:custom.notificationEmail} --region ${self:custom.region}'
-                                             
+  ssoRegion: ${file(./config.js):ssoRegion}
+  ssoUrl: ${file(./config.js):ssoUrl}
+                              
 package:
   individually: true
 
@@ -61,23 +61,36 @@ functions:
       include:
         - functions/poller/handler.py
     events:
-      - schedule:
-        rate: rate(1 minutes)
+          - schedule:
+              rate: rate(1 minute)
+              enabled: true
 
   urlRedirect:
     handler: functions/urlRedirect/handler.main
     environment:
-      START_URL: "https://ruse.awsapps.com/start"
-      REGION: "us-west-2"
+      START_URL: ${self:custom.ssoUrl}
+      REGION: ${self:custom.ssoRegion}
     package:
       exclude:
         - ./**
       include:
         - functions/urlRedirect/handler.py
     events:
-      - http: get redirect/
+      - http: get /
 
 
+  getTokens:
+    handler: functions/getTokens/handler.main
+    package:
+      exclude:
+        - ./**
+      include:
+        - functions/getTokens/handler.py
+    events:
+      - http:
+          path: getTokens
+          method: get
+          private: true
 
   getClicks:
     handler: functions/getClicks/handler.main
@@ -87,16 +100,15 @@ functions:
       include:
         - functions/getClicks/handler.py
     events:
-      - http: get getClicks/
+      - http:
+          path: getClicks
+          method: get
+          private: true
 
 
 
 resources: # CloudFormation template syntax from here on.
   Resources:
-    TokenAlert:
-      Type: AWS::SNS::Topic
-      Properties:
-        TopicName: TokenAlert
 
     # Create DynamoDB
     usersTable:
@@ -113,29 +125,5 @@ resources: # CloudFormation template syntax from here on.
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
-
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - httpApi:
-#          path: /users/create
-#          method: get
-#      - websocket: $connect
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
 
 
