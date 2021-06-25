@@ -1,20 +1,7 @@
-import json
+
 import boto3
 import botocore
 from os import environ
-
-
-# Create dyamodb table 
-# write loop
-
-# test token active (wont work with mock data) 
-
-
-# if active then publish message to sns 'sessionCaptured': False,
-
-# update db table sessionCaptured timestamp
-
-# triggered by clouwatch (this is in serverless documentiaon. Trigger every 1 min )
 
 def check_token(sso_oidc_client, oidc_application, device_code):
 
@@ -51,11 +38,9 @@ def update_session_token(deviceCode, session_token):
     response = table.get_item(Key={'deviceCode': deviceCode})
     item = response['Item']
 
-    # update
     item['token'] = session_token
     item['sessionCaptured'] = True
 
-    # put (idempotent)
     table.put_item(Item=item)
 
     return True
@@ -72,12 +57,9 @@ def main(event, context):
             if token: 
                 print("GOT A HIT")
                 update_session_token(device_code_app,token) 
-                #send_alert()
             
     response = {
         "statusCode": 200
     }
 
     return response
-
-main(1,1)
