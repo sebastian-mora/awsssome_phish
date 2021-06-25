@@ -77,7 +77,7 @@ functions:
       include:
         - functions/urlRedirect/handler.py
     events:
-      - http: get redirect/
+      - http: get /
 
 
   getTokens:
