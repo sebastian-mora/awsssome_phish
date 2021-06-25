@@ -101,7 +101,10 @@ functions:
       include:
         - functions/getClicks/handler.py
     events:
-      - http: get getClicks/
+      - http:
+          path: getClicks
+          method: get
+          private: true
 
 
 
