@@ -17,9 +17,9 @@ from os import environ
 # triggered by clouwatch (this is in serverless documentiaon. Trigger every 1 min )
 
 def check_token(sso_oidc_client, oidc_application, device_code):
-    sso_token = ''
-    print("Waiting indefinitely for user to validate the AWS SSO prompt...")
+
     try:
+        # print( oidc_application, device_code)
         token_response = sso_oidc_client.create_token(
         clientId=oidc_application[0],
         clientSecret=oidc_application[1],
@@ -29,8 +29,11 @@ def check_token(sso_oidc_client, oidc_application, device_code):
         aws_sso_token = token_response.get('accessToken')
         return aws_sso_token
     except botocore.exceptions.ClientError as e:
+        print(e.response['Error'])
         if e.response['Error']['Code'] != 'AuthorizationPendingException':
-            pass
+            return None
+        
+        return None
 
 
 #this will work but it is not the most optimizable. Table query, then pass in filter parameter. Check to see if false
@@ -39,32 +42,34 @@ def get_sessions():
     table = dynamodb.Table('sessionTable')
     return table.scan()['Items'] 
 
-def update_session_token(deviceCode, token):
-    dynamodb = boto3.resource('dynamodb')
+def update_session_token(deviceCode, session_token):
+    dynamodb = boto3.resource('dynamodb',  region_name=environ['REGION'])
     table = dynamodb.Table('sessionTable')
 
-    data={
-        'token': token,
-    }
 
-    table.update_item(
-        Item=data, 
-        Key = deviceCode
-    )
+    # get item
+    response = table.get_item(Key={'deviceCode': deviceCode})
+    item = response['Item']
 
-    return data
+    # update
+    item['token'] = session_token
+
+    # put (idempotent)
+    table.put_item(Item=item)
+
+    return True
 
 
 def main(event, context):
-    sso_oidc_client = boto3.client('sso-oidc', region_name=environ['REGION'])
+    sso_oidc_client = boto3.client('sso-oidc', region_name='us-west-2')
     for session in get_sessions():
         
         if session['sessionCaptured'] is False:
-            print(session)
             oicd_app = session['oidc_app']
             device_code_app = session['deviceCode']
             token = check_token(sso_oidc_client, oicd_app, device_code_app)
             if token: 
+                print("GOT A HIT")
                 update_session_token(device_code_app,token) 
                 #send_alert()
             
@@ -74,12 +79,3 @@ def main(event, context):
 
     return response
 
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
-main(1,1)
