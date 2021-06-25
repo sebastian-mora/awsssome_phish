@@ -53,6 +53,8 @@ functions:
 
   poller:
     handler: functions/poller/handler.main
+    environment:
+      REGION: "us-west-2"
     package:
       exclude:
         - ./**

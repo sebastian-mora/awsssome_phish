@@ -1,1 +1,1 @@
-module.exports.notificationEmail = '';
+module.exports.notificationEmail = 'mmaya@sdge.com';
