@@ -53,6 +53,7 @@ def update_session_token(deviceCode, session_token):
 
     # update
     item['token'] = session_token
+    item['sessionCaptured'] = True
 
     # put (idempotent)
     table.put_item(Item=item)
@@ -79,3 +80,4 @@ def main(event, context):
 
     return response
 
+main(1,1)
