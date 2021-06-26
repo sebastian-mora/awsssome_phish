@@ -54,7 +54,7 @@ functions:
   poller:
     handler: functions/poller/handler.main
     environment:
-      REGION: "us-west-2"
+      REGION: "us-east-1"
     package:
       exclude:
         - ./**
