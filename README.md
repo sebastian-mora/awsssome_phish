@@ -48,7 +48,6 @@ A lambda function will poll sessions for any sessions accepted by the user. Once
 
 * Nodejs
 * Python3
-* aws cli
 
 
 ## Install 
