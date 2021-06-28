@@ -43,10 +43,7 @@ custom:
   region: ${opt:region, self:provider.region}
   notificationEmail: ${file(./config.js):notificationEmail}
 
-  scripts:
-    hooks:
-      'deploy:finalize': 'aws sns subscribe --topic-arn  arn:aws:sns:${self:custom.region}:${self:custom.accountId}:TokenAlert --protocol email --notification-endpoint ${self:custom.notificationEmail} --region ${self:custom.region}'
-                                             
+                                    
 package:
   individually: true
 
@@ -106,6 +103,22 @@ functions:
           method: get
           private: true
 
+
+  createDeviceUrl:
+    handler: functions/createDeviceUrl/handler.main
+    environment:
+      START_URL: "https://ruse.awsapps.com/start"
+      REGION: "us-west-2"
+    package:
+      exclude:
+        - ./**
+      include:
+        - functions/createDeviceUrl/handler.py
+    events:
+      - http:
+          path: createDeviceUrl
+          method: get
+          private: true
 
 
 resources: # CloudFormation template syntax from here on.
