@@ -22,12 +22,14 @@ A lambda function will poll sessions for any sessions accepted by the user. Once
 
 If you would like to add a custom domain to the API endpoint you must configure that manually in AWS.
 
-## Install 
-
-### Requirments 
+## Requirments 
 
 * Nodejs
 * Python3
+
+## Install 
+
+
 
 1. Install serverless framework 
     `npm install serverless`
