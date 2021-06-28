@@ -4,9 +4,9 @@
 
 This method was originally posted in a [blog](https://blog.christophetd.fr/phishing-for-aws-credentials-via-aws-sso-device-code-authentication) by Christophe Tafani-Dereeper.
 
-When a user visits / of the URL a lambda function starts a sso-oicd authentication. Here a device authentication URL is generated and the victim is automatically redirected to. The sso-oicd tokens will be stored in a DynamoDb table. To bypass the 6 min login URL expire, URLs are generated "Just In Time" when the user visits the attacker URL. 
+When a user visits / of the URL a lambda function starts a sso-oicd authentication, a device authentication URL is generated and the victim is automatically redirected. To bypass the 6 min login URL expire, URLs are generated "Just In Time" when the user visits the attacker URL. 
 
-Once redirected there will be an AWS SSO prompt asking the user to accept. If the user accepts then the ssso-oicd tokens become valid and can be used to generate a session token to authenticate to the environment. Once a token is active it is saved in the DB.
+Once redirected there will be an AWS SSO prompt asking the user to accept. If the user accepts then the ssso-oicd tokens become valid a session token is generated and stored in the DynamoDb table.
 
 ## Demo
 
@@ -32,14 +32,12 @@ If you would like to add a custom domain to the API endpoint you must configure 
 1. Install serverless framework 
     `npm install serverless`
 
-2. Add notification email address to `config.js`
-
-3. Specific the SSO URL and region in `config.js`
+2. Specific the SSO URL and region in `config.js`
 
 3. Deploy the API
     `sls deploy`
 
-5. Take note of the API Key and deployed endpoints. 
+4. Take note of the API Key and deployed endpoints. 
 
     At this stage, you will want to consider adding a custom domain name to your deployment. 
 
