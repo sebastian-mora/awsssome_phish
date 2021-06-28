@@ -3,7 +3,7 @@ import boto3
 
 
 def dump_table():
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('sessionTable')
     return parse_data(table.scan()['Items'])
 

@@ -55,7 +55,7 @@ functions:
   poller:
     handler: functions/poller/handler.main
     environment:
-      REGION: "us-east-1"
+      REGION: ${self:custom.ssoRegion}
     package:
       exclude:
         - ./**
@@ -111,7 +111,7 @@ functions:
     handler: functions/createDeviceUrl/handler.main
     environment:
       START_URL: "https://ruse.awsapps.com/start"
-      REGION: "us-west-2"
+      REGION: ${self:custom.ssoRegion}
     package:
       exclude:
         - ./**
