@@ -25,12 +25,12 @@ def check_token(sso_oidc_client, oidc_application, device_code):
 
 #this will work but it is not the most optimizable. Table query, then pass in filter parameter. Check to see if false
 def get_sessions():
-    dynamodb = boto3.resource('dynamodb', region_name=environ['REGION'])
+    dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('sessionTable')
     return table.scan()['Items'] 
 
 def update_session_token(deviceCode, session_token):
-    dynamodb = boto3.resource('dynamodb',  region_name=environ['REGION'])
+    dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('sessionTable')
 
 
@@ -47,7 +47,7 @@ def update_session_token(deviceCode, session_token):
 
 
 def main(event, context):
-    sso_oidc_client = boto3.client('sso-oidc', region_name='us-west-2')
+    sso_oidc_client = boto3.client('sso-oidc', region_name=environ['REGION'])
     for session in get_sessions():
         
         if session['sessionCaptured'] is False:
