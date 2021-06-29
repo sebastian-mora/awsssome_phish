@@ -1,0 +1,24 @@
+{
+  "name": "awsssome_phish",
+  "version": "1.0.0",
+  "description": "This method was originally posted in a [blog](https://blog.christophetd.fr/phishing-for-aws-credentials-via-aws-sso-device-code-authentication) by Christophe Tafani-Dereeper. This tool serves as an implementation of their work.",
+  "main": "aws.js",
+  "dependencies": {
+    "aws-sdk": "^2.936.0",
+    "serverless-plugin-scripts": "^1.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastian-mora/awsssome_phish.git"
+  },
+  "author": "Sebastian Mora",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sebastian-mora/awsssome_phish/issues"
+  },
+  "homepage": "https://github.com/sebastian-mora/awsssome_phish#readme"
+}
