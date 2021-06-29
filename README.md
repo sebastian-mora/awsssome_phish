@@ -1,11 +1,11 @@
 
 #  awsssome_phish
 
-This method was originally posted in a [blog](https://blog.christophetd.fr/phishing-for-aws-credentials-via-aws-sso-device-code-authentication) by Christophe Tafani-Dereeper.
+This method was originally posted in a [blog](https://blog.christophetd.fr/phishing-for-aws-credentials-via-aws-sso-device-code-authentication) by Christophe Tafani-Dereeper. This tool serves as an implementation of their work. 
 
-When a user visits / of the URL a lambda function starts a sso-oicd authentication, a device authentication URL is generated and the victim is automatically redirected. To bypass the 6 min login URL expire, URLs are generated "Just In Time" when the user visits the attacker URL. 
+When a user visits `/` of the phishing URL a lambda function starts sso-oicd authentication, a device authentication URL is generated and the victim is automatically redirected. To bypass the 6 min device authentication URL expiration, URLs are generated "Just In Time" when the user visits the phishing URL. 
 
-Once redirected there will be an AWS SSO prompt asking the user to accept. If the user accepts then the ssso-oicd tokens become valid a session token is generated and stored in the DynamoDb table.
+Once redirected there will be an AWS SSO prompt asking the user to accept. If the user accepts then the ssso-oicd tokens become valid. Then a session token is generated and stored in the DynamoDb table, which can be accessed via the API.
 
 ## Demo
 
@@ -13,11 +13,9 @@ https://user-images.githubusercontent.com/24581748/123670450-1471ec80-d7f2-11eb-
 
 ## How it works
 
-The setup of this tool is nearly completely automated. Deploy the framework with serverless and take note of the outputs. 
+The setup of this tool is nearly automated. Deploy the framework with serverless and take note of the outputs. 
 
-Once deployed you will get your deployment endpoint as well as an API key to access the routes. 
-
-A lambda function will poll sessions for any sessions accepted by the user. Once a session is accepted the session tokens are available by API endpoints. Additionally, you can use the console directly to view the DynamoDb table.
+Once deployed you will get your deployment endpoint as well as an API key to access the protected routes. 
 
 If you would like to add a custom domain to the API endpoint you must configure that manually in AWS.
 
@@ -28,12 +26,10 @@ If you would like to add a custom domain to the API endpoint you must configure 
 
 ## Install 
 
-
-
 1. Install serverless framework 
     `npm install serverless`
 
-2. Specific the SSO URL and region in `config.js`
+2. Specific the SSO URL and SSO Region in `config.js`
 
 3. Deploy the API
     `sls deploy`
