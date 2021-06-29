@@ -1,6 +1,5 @@
 
-# aws_sso_phishing
-
+#  awsssome_phish
 
 This method was originally posted in a [blog](https://blog.christophetd.fr/phishing-for-aws-credentials-via-aws-sso-device-code-authentication) by Christophe Tafani-Dereeper.
 
