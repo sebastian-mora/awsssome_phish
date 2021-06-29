@@ -1,3 +1,3 @@
-module.exports.ssoUrl = '';
-module.exports.ssoRegion = '';
+module.exports.ssoUrl = 'https://example.awsapps.com/start';
+module.exports.ssoRegion = 'us-west-2';
 
