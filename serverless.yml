@@ -1,5 +1,5 @@
-service: aws-sso-phishing
-app: aws-sso-phishing
+service: awsssome_phish
+app: awsssome_phish
 
 
 frameworkVersion: '2'
