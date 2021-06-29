@@ -37,9 +37,10 @@ provider:
             - "dynamodb:GetItem"
             - "dynamodb:Scan"
           Resource:
-            - "*"
+            Fn::GetAtt:
+              - usersTable
+              - Arn
 custom: 
-  accountId: ${file(./aws.js):getAccountId}
   ssoRegion: ${file(./config.js):ssoRegion}
   ssoUrl: ${file(./config.js):ssoUrl}
                               
